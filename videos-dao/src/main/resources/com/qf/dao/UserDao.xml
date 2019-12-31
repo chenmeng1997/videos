@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.UserDao">
+    <resultMap type="com.qf.entity.User" id="userMap">
+        <id column="id" property="id"/>
+        <result column="email" property="email"/>
+        <result column="phoneNum" property="phoneNum"/>
+        <result column="password" property="password"/>
+        <result column="code" property="code"/>
+        <result column="nickName" property="nickName"/>
+        <result column="sex" property="sex"/>
+        <result column="birthday" property="birthday"/>
+        <result column="address" property="address"/>
+        <result column="imgUrl" property="imgUrl"/>
+        <result column="createTime" property="createTime"/>
+    </resultMap>
+
+    <update id="updateUser" parameterType="com.qf.entity.User">
+        update myssm.user set
+        nickName=#{nickName},
+        sex=#{sex},
+        birthday=#{birthday},
+        address=#{address}
+        where email=#{email}
+    </update>
+
+    <update id="updateUserPwd" parameterType="com.qf.entity.User">
+        update myssm.user set password=#{password} where email=#{email}
+    </update>
+
+    <update id="updateUserImg" parameterType="com.qf.entity.User">
+        update myssm.user set imgUrl=#{imgUrl} where email=#{email}
+    </update>
+
+</mapper>

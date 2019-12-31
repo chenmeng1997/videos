@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.CourseDao">
+    <resultMap type="com.qf.entity.Course" id="courseMap">
+
+        <id column="id" property="id"/>
+        <result column="courseTitle" property="courseTitle"/>
+        <result column="subjectId" property="subjectId"/>
+        <result column="courseDesc" property="courseDesc"/>
+
+        <association property="subject" javaType="com.qf.entity.Subject">
+            <id column="id" property="id"/>
+            <result column="subjectName" property="subjectName"/>
+        </association>
+
+        <collection property="videoList" ofType="com.qf.entity.Video">
+            <id column="vid" property="id"/>
+            <result column="title" property="title"/>
+            <result column="time" property="time"/>
+            <result column="videoUrl" property="videoUrl"/>
+            <result column="imageUrl" property="imageUrl"/>
+            <result column="playNum" property="playNum"/>
+            <result column="detail" property="detail"/>
+            <association property="speaker" javaType="com.qf.entity.Speaker">
+                <id column="sid" property="id"/>
+                <result column="speakerName" property="speakerName"/>
+                <result column="speakerJob" property="speakerJob"/>
+                <result column="headImgUrl" property="headImgUrl"/>
+                <result column="speakerDesc" property="speakerDesc"/>
+            </association>
+        </collection>
+
+    </resultMap>
+    <!--分页 查询-->
+    <select id="getAllCoursePage" resultMap="courseMap">
+        select * from myssm.course, myssm.subject where course.subjectId=subject.id
+        <if test="start != null">
+            LIMIT #{start}, #{rows}
+        </if>
+    </select>
+    <!--查询符合条件数据总数-->
+    <select id="getCourseCount" resultType="java.lang.Integer">
+        select count(1) from myssm.course, myssm.subject
+         where course.subjectId=subject.id
+    </select>
+    <!--据ID 查-->
+    <select id="getCourseById" resultMap="courseMap">
+      select course.id, courseTitle, courseDesc, subjectId,
+             speaker.id sid, speakerName, speakerDesc, speakerJob, headImgUrl
+        from myssm.course, myssm.speaker
+        where course.subjectId=speaker.id
+        and course.id=#{id}
+    </select>
+
+    <select id="findAllVideoById" resultMap="courseMap">
+       select
+            c.id, courseTitle, courseDesc, subjectId,
+            v.id vid, title, detail, v.time, speakerId, courseId, videoUrl, imageUrl, playNum,
+            s.id sid, speakerName, speakerDesc, speakerJob, headImgUrl
+        from myssm.course c
+        left join myssm.video v on v.courseId = c.id
+        left join myssm.speaker s on s.id = v.speakerId
+        where c.id = #{id}
+
+    </select>
+    <!--增-->
+    <insert id="addCourse" parameterType="com.qf.entity.Course">
+        Insert into course(courseTitle,courseDesc,subjectId)values(#{courseTitle},#{courseDesc},#{subjectId})
+    </insert>
+    <!--改-->
+    <update id="updateCourse" parameterType="com.qf.entity.Course">
+        update course set courseTitle=#{courseTitle},subjectId=#{subjectId},courseDesc=#{courseDesc} where id=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.SpeakerDao">
+    <resultMap type="com.qf.entity.Speaker" id="speakerMap">
+        <id column="id" property="id"/>
+        <result column="speakerName" property="speakerName"/>
+        <result column="speakerJob" property="speakerJob"/>
+        <result column="headImgUrl" property="headImgUrl"/>
+        <result column="speakerDesc" property="speakerDesc"/>
+    </resultMap>
+    <!--增-->
+    <insert id="addSpeaker" parameterType="com.qf.entity.Speaker">
+        insert into speaker(speakerName,headImgUrl,speakerJob,speakerDesc)
+        values(#{speakerName},#{speakerDesc},#{speakerJob},#{speakerDesc})
+    </insert>
+    <!--改-->
+    <update id="updateSpeaker" parameterType="com.qf.entity.Speaker">
+        UPDATE myssm.speaker SET
+        speakerName=#{speakerName},
+        speakerDesc=#{speakerDesc},
+        speakerJob=#{speakerJob},
+        headImgUrl=#{headImgUrl}
+        WHERE myssm.speaker.id = #{id}
+    </update>
+    <!--分页遍历-->
+    <select id="getAllSpeakerByqueryVo" parameterType="com.qf.entity.QueryVo" resultMap="speakerMap">
+        select * from myssm.speaker
+        <if test="start != null">
+            LIMIT #{start}, #{rows}
+        </if>
+    </select>
+    <!--获取数据总数-->
+    <select id="getSpeakerCountByqueryVo" parameterType="com.qf.entity.QueryVo" resultType="java.lang.Integer">
+        select count(1) from myssm.speaker
+    </select>
+
+</mapper>

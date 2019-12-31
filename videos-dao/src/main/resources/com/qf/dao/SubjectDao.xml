@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.SubjectDao">
+    <!--Subject 科目-->
+    <resultMap type="com.qf.entity.Subject" id="subjectMap">
+        <id column="id" property="id"/>
+        <result column="subjectName" property="subjectName"/>
+        <!--Course 课程-->
+        <collection property="courseList" ofType="com.qf.entity.Course">
+            <result column="courseTitle" property="courseTitle"/>
+            <result column="courseDesc" property="courseDesc"/>
+            <!--Video 视频-->
+            <collection property="videoList" ofType="com.qf.entity.Video">
+                <id column="vid" property="id"/>
+                <result column="title" property="title"/>
+                <result column="time" property="time"/>
+                <result column="videoUrl" property="videoUrl"/>
+                <result column="imageUrl" property="imageUrl"/>
+                <result column="playNum" property="playNum"/>
+            </collection>
+        </collection>
+
+    </resultMap>
+
+    <select id="getCourseListById" resultMap="subjectMap">
+        select
+            s.id, s.subjectName,
+            c.courseTitle, c.courseDesc,
+            v.id vid, v.title, v.time, v.videoUrl, v.imageUrl, v.playNum
+        from myssm.subject s
+        left join myssm.course c on s.id=c.subjectId
+        left join myssm.video v on c.id=v.courseId
+        where s.id=#{id}
+
+     </select>
+</mapper>

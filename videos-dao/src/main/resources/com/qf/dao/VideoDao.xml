@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.VideoDao">
+
+    <resultMap type="com.qf.entity.Video" id="videoMap">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="time" property="time"/>
+        <result column="speakerId" property="speakerId"/>
+        <result column="courseId" property="courseId"/>
+        <result column="videoUrl" property="videoUrl"/>
+        <result column="imageUrl" property="imageUrl"/>
+        <result column="playNum" property="playNum"/>
+        <result column="detail" property="detail"/>
+
+        <association property="course" javaType="com.qf.entity.Course">
+            <id column="id" property="id"/>
+            <result column="courseTitle" property="courseTitle"/>
+            <result column="subjectId" property="subjectId"/>
+            <result column="courseDesc" property="courseDesc"/>
+        </association>
+
+        <association property="speaker" javaType="com.qf.entity.Speaker">
+            <id column="id" property="id"/>
+            <result column="speakerName" property="speakerName"/>
+            <result column="speakerJob" property="speakerJob"/>
+            <result column="headImgUrl" property="headImgUrl"/>
+            <result column="speakerDesc" property="speakerDesc"/>
+        </association>
+
+    </resultMap>
+
+    <sql id="SelectPageAll">
+        <if test="title != null and title != ''">
+            AND title LIKE '%${title}%'
+        </if>
+        <if test="speakerId != null and  speakerId != ''">
+            AND speakerId = #{speakerId}
+        </if>
+        <if test="courseId != null and courseId != ''">
+            AND courseId = #{courseId}
+        </if>
+    </sql>
+
+    <!--查找所有-->
+    <select id="getAllVideo" resultMap="videoMap">
+        select * from myssm.video, myssm.speaker, myssm.course
+        where video.speakerId=speaker.id and video.courseId=course.id
+        <include refid="SelectPageAll"/>
+        <if test="start != null">
+            LIMIT #{start}, #{rows}
+        </if>
+    </select>
+    <!-- 根据queryVo查询满足条件数据条数 -->
+    <select id="getVideoCount" resultType="java.lang.Integer" parameterType="com.qf.entity.QueryVo">
+        select count(1) from myssm.video, myssm.speaker, myssm.course
+        where video.speakerId=speaker.id and video.courseId=course.id
+        <include refid="SelectPageAll"/>
+    </select>
+    <!--按ID查询-->
+    <select id="getVideoById" resultMap="videoMap">
+        select * from myssm.video, myssm.speaker, myssm.course
+        where video.courseId = course.id
+        and video.speakerId = speaker.id
+        and video.id = #{id}
+    </select>
+    <!--添加-->
+    <insert id="addVideo" parameterType="com.qf.entity.Video">
+       insert into video(id,title,detail,time,speakerId,courseId,videoUrl,imageUrl,playNum)values
+        (#{id},#{title},#{detail},#{time},#{speakerId},#{courseId},#{videoUrl},#{imageUrl},#{playNum})
+    </insert>
+    <!--改-->
+    <update id="updateVideo" parameterType="com.qf.entity.Video">
+        UPDATE video SET id=#{id},title=#{title},detail=#{detail},time=#{time},speakerId=#{speakerId},courseId=#{courseId},
+        videoUrl=#{videoUrl},imageUrl=#{imageUrl},playNum=#{playNum}
+        WHERE id = #{id}
+    </update>
+</mapper>
